@@ -4,11 +4,23 @@
   <a href="https://github.com/Alcheri/LocalControl/releases/latest">
     <img src="https://img.shields.io/github/v/release/Alcheri/LocalControl?sort=semver" alt="Latest Release">
   </a>
+<!-- README_HEADER:start -->
+<p align="center">
+  <a href="https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml">
+    <img src="https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml/badge.svg" alt="Tests">
+  </a>
+  <a href="https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml">
+    <img src="https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml/badge.svg" alt="Lint">
+  </a>
+  <a href="https://github.com/Alcheri/LocalControl/security/code-scanning">
+    <img src="https://github.com/Alcheri/LocalControl/actions/workflows/codeql.yml/badge.svg" alt="CodeQL">
+  </a>
   <img src="https://img.shields.io/badge/python-3.9%2B-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/code style-black-000000.svg" alt="Code style: black">
+  <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
   <img src="https://img.shields.io/badge/limnoria-compatible-brightgreen.svg" alt="Limnoria">
   <img src="https://img.shields.io/badge/License-BSD_3--Clause-blue.svg" alt="License">
 </p>
+<!-- README_HEADER:end -->
 
 LocalControl is a minimal UNIX-socket control interface for Limnoria bots. It
 provides a local administrative command channel without exposing a separate
