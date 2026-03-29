@@ -5,7 +5,6 @@
     <img src="https://img.shields.io/github/v/release/Alcheri/LocalControl?sort=semver" alt="Latest Release">
   </a>
 <!-- README_HEADER:start -->
-<p align="center">
   <a href="https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml">
     <img src="https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml/badge.svg" alt="Tests">
   </a>
