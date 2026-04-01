@@ -1,0 +1,35 @@
+plugin:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugin.py
+          - config.py
+          - __init__.py
+          - local/**
+
+cli:
+  - changed-files:
+      - any-glob-to-any-file:
+          - botctl
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - test.py
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - README.md
+          - Release.md
+          - LICENCE.md
+
+packaging:
+  - changed-files:
+      - any-glob-to-any-file:
+          - pyproject.toml
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/workflows/**
+          - .github/labeler.yml
