@@ -1,4 +1,5 @@
 <!-- LocalControl provides a UNIX socket for local command execution. -->
+
 <h1 align="center">LocalControl</h1>
 
 <p align="center">
