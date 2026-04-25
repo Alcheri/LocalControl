@@ -40,3 +40,6 @@ extend-exclude = '''
 
 [tool.setuptools.package-data]
 "limnoria_localcontrol" = ["locales/*.po"]
+
+[tool.pytest.ini_options]
+python_files = ["test.py"]
