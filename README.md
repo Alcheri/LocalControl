@@ -36,6 +36,9 @@ This project includes:
 LocalControl is designed to be self-contained, predictable, and portable across
 multiple bot instances.
 
+The socket is intended as a local owner-control channel. Local filesystem access
+to `.localcontrol.sock` is therefore equivalent to owner-level bot access.
+
 ---
 
 ## Installation
@@ -59,6 +62,10 @@ The plugin creates this UNIX domain socket beside `plugin.py`:
 ```text
 ~/runbot/plugins/LocalControl/.localcontrol.sock
 ```
+
+LocalControl restricts the socket file to owner-only permissions (`0600`) after
+binding it. The parent directory must still be protected so that only trusted
+local users can reach the socket path.
 
 If you install the plugin somewhere else, adjust the examples below to match
 that path.
@@ -241,8 +248,35 @@ Re-enable logging:
 botctl bot config plugins.LocalControl.socketRequestLogging true
 ```
 
-When enabled, each request is logged with its request ID, command, reply count,
-execution time in milliseconds, and any errors.
+When enabled, each request is logged with its request ID, status, reply count,
+execution time in milliseconds, command name, argument count, and any errors.
+Full command text is not logged by default.
+
+To temporarily log full command text for debugging, enable:
+
+```bash
+botctl bot config plugins.LocalControl.socketRequestFullCommandLogging true
+```
+
+Full command logging redacts obvious sensitive values such as passwords,
+passphrases, secrets, tokens, API keys, and key-style fields. Leave it disabled
+unless you specifically need full command text in the bot logs.
+
+Disable full command logging again with:
+
+```bash
+botctl bot config plugins.LocalControl.socketRequestFullCommandLogging false
+```
+
+### Local request limits
+
+LocalControl applies a short timeout to each connected client. A client that
+connects but does not send a command is disconnected instead of holding a
+handler thread indefinitely.
+
+Socket dispatches are serialised while LocalControl temporarily captures
+Limnoria replies, preventing overlapping local requests from racing the shared
+IRC send and queue hooks.
 
 ---
 

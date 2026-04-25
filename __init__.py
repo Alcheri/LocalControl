@@ -14,7 +14,7 @@ import supybot
 from supybot import world
 
 # Use this for the version of this plugin.
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 # XXX Replace this with an appropriate author or supybot.Author instance.
 __author__ = supybot.Author("Barry Suridge", "Alcheri", "barry.suridge@gmail.com")

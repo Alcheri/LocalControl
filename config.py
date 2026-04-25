@@ -36,6 +36,14 @@ conf.registerGlobalValue(
         _("""Whether LocalControl writes one log line per socket request."""),
     ),
 )
+conf.registerGlobalValue(
+    LocalControl,
+    "socketRequestFullCommandLogging",
+    registry.Boolean(
+        False,
+        _("""Whether LocalControl logs full socket command text after redaction."""),
+    ),
+)
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

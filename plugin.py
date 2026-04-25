@@ -17,6 +17,69 @@ import threading
 import time
 import itertools
 
+CLIENT_TIMEOUT_SECONDS = 5.0
+SOCKET_MODE = 0o600
+SENSITIVE_COMMAND_TERMS = (
+    "password",
+    "passwd",
+    "passphrase",
+    "secret",
+    "token",
+    "apikey",
+    "api_key",
+)
+SENSITIVE_COMMAND_KEYS = ("key",)
+
+
+def _restrict_socket_permissions(socket_path):
+    os.chmod(socket_path, SOCKET_MODE)
+
+
+def _is_sensitive_command_key(value):
+    key = value.lower().strip("-")
+    for term in SENSITIVE_COMMAND_TERMS:
+        if term in key:
+            return True
+    for term in SENSITIVE_COMMAND_KEYS:
+        if (
+            key == term
+            or key.endswith(f".{term}")
+            or key.endswith(f"_{term}")
+            or key.endswith(f"-{term}")
+        ):
+            return True
+    return False
+
+
+def _redact_command_text(command):
+    parts = command.split()
+    redacted = []
+    redact_next = False
+
+    for part in parts:
+        if redact_next:
+            redacted.append("[redacted]")
+            redact_next = False
+            continue
+
+        key, separator, value = part.partition("=")
+        if separator and _is_sensitive_command_key(key):
+            redacted.append(f"{key}=[redacted]")
+            continue
+
+        redacted.append(part)
+        if _is_sensitive_command_key(part):
+            redact_next = True
+
+    return " ".join(redacted)
+
+
+def _command_summary(command):
+    parts = command.split()
+    if not parts:
+        return "", 0
+    return parts[0], len(parts) - 1
+
 
 class LocalControl(callbacks.Plugin):
     """Provides a local-only UNIX socket for issuing bot commands."""
@@ -40,6 +103,7 @@ class LocalControl(callbacks.Plugin):
 
         self.server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.server.bind(self.socket_path)
+        _restrict_socket_permissions(self.socket_path)
         self.server.listen(1)
         self.server.settimeout(1.0)
 
@@ -81,6 +145,7 @@ class LocalControl(callbacks.Plugin):
         raw_data = ""
 
         try:
+            conn.settimeout(CLIENT_TIMEOUT_SECONDS)
             # Read the incoming command (single line)
             raw_data = conn.recv(4096).decode("utf-8")
             data = raw_data.strip()
@@ -133,16 +198,17 @@ class LocalControl(callbacks.Plugin):
                 if not capture(msg):
                     old_queue(msg)
 
-            irc.sendMsg = send_cb
-            irc.queueMsg = queue_cb
+            with self._dispatch_lock:
+                irc.sendMsg = send_cb
+                irc.queueMsg = queue_cb
 
-            try:
-                # Dispatch the command
-                self._dispatch(irc, command, args, synthetic_prefix)
-            finally:
-                # Restore original methods
-                irc.sendMsg = old_send
-                irc.queueMsg = old_queue
+                try:
+                    # Dispatch the command
+                    self._dispatch(irc, command, args, synthetic_prefix)
+                finally:
+                    # Restore original methods
+                    irc.sendMsg = old_send
+                    irc.queueMsg = old_queue
 
             # Build reply text
             if replies:
@@ -154,7 +220,14 @@ class LocalControl(callbacks.Plugin):
 
             # Log the request
             self._log_socket_request(
-                req_id, raw_data, reply_text, replies=len(replies), started=started
+                req_id, raw_data, "ok", replies=len(replies), started=started
+            )
+
+        except socket.timeout:
+            err = "Error: request timed out\n"
+            conn.sendall(err.encode("utf-8"))
+            self._log_socket_request(
+                req_id, raw_data, "timeout", replies=0, started=started
             )
 
         except Exception as e:
@@ -171,14 +244,21 @@ class LocalControl(callbacks.Plugin):
         if not self.registryValue("socketRequestLogging"):
             return
         duration_ms = (time.perf_counter() - started) * 1000.0
-        cmd = " ".join(command.split())[:200] if command else ""
-        line = 'LocalControl: socket req=%s status=%s replies=%s ms=%.1f cmd="%s"' % (
+        cmd, argc = _command_summary(command)
+        line = (
+            "LocalControl: socket req=%s status=%s replies=%s ms=%.1f "
+            'command="%s" argc=%s'
+        ) % (
             req_id,
             status,
             replies,
             duration_ms,
             cmd,
+            argc,
         )
+        if self.registryValue("socketRequestFullCommandLogging"):
+            full_cmd = _redact_command_text(" ".join(command.split()))[:200]
+            line += ' full_cmd="%s"' % full_cmd
         if error:
             err = " ".join(error.split())[:200]
             line += ' error="%s"' % err
