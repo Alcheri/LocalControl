@@ -16,9 +16,14 @@ import socket
 import threading
 import time
 import itertools
+import ipaddress
+import errno
 
 CLIENT_TIMEOUT_SECONDS = 5.0
 SOCKET_MODE = 0o600
+TCP_BACKLOG = 1
+TCP_BIND_RETRIES = 10
+TCP_BIND_RETRY_DELAY_SECONDS = 0.1
 SENSITIVE_COMMAND_TERMS = (
     "password",
     "passwd",
@@ -81,6 +86,15 @@ def _command_summary(command):
     return parts[0], len(parts) - 1
 
 
+def _is_loopback_host(host):
+    if host.lower() == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
 class LocalControl(callbacks.Plugin):
     """Provides a local-only UNIX socket for issuing bot commands."""
 
@@ -107,13 +121,26 @@ class LocalControl(callbacks.Plugin):
         self.server.listen(1)
         self.server.settimeout(1.0)
 
-        threading.Thread(target=self._accept_loop, daemon=True).start()
+        self.tcp_server = self._open_tcp_server()
+
+        threading.Thread(
+            target=self._accept_loop, args=(self.server,), daemon=True
+        ).start()
+        if self.tcp_server is not None:
+            threading.Thread(
+                target=self._accept_loop, args=(self.tcp_server,), daemon=True
+            ).start()
 
     def die(self):
         try:
             self.server.close()
-        except Exception:
-            pass
+        except Exception as e:
+            log.debug("LocalControl: UNIX socket close failed: %s" % e)
+        if self.tcp_server is not None:
+            try:
+                self.tcp_server.close()
+            except Exception as e:
+                log.debug("LocalControl: TCP socket close failed: %s" % e)
         try:
             os.unlink(self.socket_path)
         except OSError:
@@ -122,10 +149,55 @@ class LocalControl(callbacks.Plugin):
 
     # -----------------------------------------------------------------------------
 
-    def _accept_loop(self):
+    def _open_tcp_server(self):
+        if not self.registryValue("tcpListenerEnabled"):
+            return None
+
+        host = self.registryValue("tcpListenHost")
+        port = self.registryValue("tcpListenPort")
+        if port < 1 or port > 65535:
+            log.warning("LocalControl: TCP listener disabled; invalid port %r" % port)
+            return None
+        if not self.registryValue("tcpAllowRemote") and not _is_loopback_host(host):
+            log.warning(
+                "LocalControl: TCP listener disabled; %s is not loopback and "
+                "tcpAllowRemote is false" % host
+            )
+            return None
+
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        if not self._bind_tcp_server(server, host, port):
+            return None
+
+        server.listen(TCP_BACKLOG)
+        server.settimeout(1.0)
+        log.info("LocalControl: TCP listener enabled on %s:%s" % (host, port))
+        return server
+
+    # -----------------------------------------------------------------------------
+
+    def _bind_tcp_server(self, server, host, port):
+        for attempt in range(TCP_BIND_RETRIES + 1):
+            try:
+                server.bind((host, port))
+                return True
+            except OSError as e:
+                if e.errno != errno.EADDRINUSE or attempt == TCP_BIND_RETRIES:
+                    server.close()
+                    log.warning(
+                        "LocalControl: TCP listener disabled; bind failed: %s" % e
+                    )
+                    return False
+                time.sleep(TCP_BIND_RETRY_DELAY_SECONDS)
+        return False
+
+    # -----------------------------------------------------------------------------
+
+    def _accept_loop(self, server):
         while True:
             try:
-                conn, _ = self.server.accept()
+                conn, _ = server.accept()
             except socket.timeout:
                 if world.dying:
                     return

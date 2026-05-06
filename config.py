@@ -44,6 +44,38 @@ conf.registerGlobalValue(
         _("""Whether LocalControl logs full socket command text after redaction."""),
     ),
 )
+conf.registerGlobalValue(
+    LocalControl,
+    "tcpListenerEnabled",
+    registry.Boolean(
+        False,
+        _("""Whether LocalControl also listens on TCP for local testing."""),
+    ),
+)
+conf.registerGlobalValue(
+    LocalControl,
+    "tcpListenHost",
+    registry.String(
+        "127.0.0.1",
+        _("""Host address for the optional TCP listener."""),
+    ),
+)
+conf.registerGlobalValue(
+    LocalControl,
+    "tcpListenPort",
+    registry.PositiveInteger(
+        8023,
+        _("""Port for the optional TCP listener."""),
+    ),
+)
+conf.registerGlobalValue(
+    LocalControl,
+    "tcpAllowRemote",
+    registry.Boolean(
+        False,
+        _("""Whether the optional TCP listener may bind to non-loopback hosts."""),
+    ),
+)
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

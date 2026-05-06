@@ -125,6 +125,38 @@ class TestLocalControlModule(unittest.TestCase):
         self.assertTrue(local_control._dispatch_lock.entered)
         self.assertEqual(dispatch_states, [True])
 
+    def test_optional_tcp_server_binds_to_loopback_when_enabled(self):
+        probe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        probe.bind(("127.0.0.1", 0))
+        host, port = probe.getsockname()
+        probe.close()
+
+        local_control = object.__new__(plugin.LocalControl)
+        local_control.registryValue = lambda name: {
+            "tcpListenerEnabled": True,
+            "tcpListenHost": host,
+            "tcpListenPort": port,
+            "tcpAllowRemote": False,
+        }[name]
+
+        server = local_control._open_tcp_server()
+        try:
+            self.assertIsNotNone(server)
+            self.assertEqual(server.getsockname(), (host, port))
+        finally:
+            server.close()
+
+    def test_optional_tcp_server_rejects_non_loopback_by_default(self):
+        local_control = object.__new__(plugin.LocalControl)
+        local_control.registryValue = lambda name: {
+            "tcpListenerEnabled": True,
+            "tcpListenHost": "0.0.0.0",
+            "tcpListenPort": 8023,
+            "tcpAllowRemote": False,
+        }[name]
+
+        self.assertIsNone(local_control._open_tcp_server())
+
     def test_socket_request_logging_uses_safe_summary_by_default(self):
         lines = []
         original_info = plugin.log.info

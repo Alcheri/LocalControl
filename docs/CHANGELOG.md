@@ -4,7 +4,23 @@ All notable changes to LocalControl will be documented in this file.
 
 ## [Unreleased]
 
-No unreleased changes.
+### Added
+
+- Added an optional TCP listener for local testing tools, disabled by default.
+- Added configuration for the TCP listener host, port, and non-loopback binding
+  override.
+- Added regression tests for TCP loopback binding and non-loopback rejection.
+- Added beta GUI binaries for Linux and Windows.
+
+### Changed
+
+- The optional TCP listener now retries briefly when rebinding during plugin
+  reload.
+
+### Security
+
+- The optional TCP listener is loopback-only by default because TCP access is
+  equivalent to owner-level LocalControl access.
 
 ## [1.1.0] - 2026-04-25
 

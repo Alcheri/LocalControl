@@ -10,8 +10,12 @@ CACHEDIR.TAG
 
 # Virtual environments
 .venv/
+.venv-linux/
+.venv-windows/
 venv/
 env/
+tools/.venv-linux/
+tools/.venv-windows/
 
 # supybot
 backup/
@@ -35,3 +39,13 @@ Thumbs.db
 # Logs and diagram sources
 *.mmd
 *.log
+
+# Local GUI source, settings, and private build tooling
+tools/
+
+# Packaging artefacts
+build/
+*.spec
+/dist/*
+!/dist/LocalControl-GUI
+!/dist/LocalControl-GUI.exe
