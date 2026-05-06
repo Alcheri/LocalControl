@@ -364,6 +364,16 @@ On Windows, SSH mode expects native Windows OpenSSH with a Windows-accessible
 key or ssh-agent identity. Password prompts and WSL-held keys are not available
 to the Windows binary.
 
+Before using SSH mode on Windows, verify that native OpenSSH can authenticate
+without a password prompt:
+
+```powershell
+ssh -o BatchMode=yes user@host
+```
+
+If that command asks for a password or fails, configure a key under
+`%USERPROFILE%\.ssh` or add the key to the Windows `ssh-agent` first.
+
 These beta binaries target recent Linux distributions and current Windows
 releases. Older platforms are not a support target for the GUI beta.
 
