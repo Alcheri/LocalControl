@@ -360,10 +360,9 @@ The GUI connects to LocalControl through the same local socket or configured
 remote command path as `botctl`. Keep socket files and SSH access restricted to
 trusted local users because GUI access can issue owner-level bot commands.
 
-When the Windows GUI uses WSL-based SSH launchers such as `wsl.exe ssh`, it
-automatically inserts `--exec` so the remote command is passed to `ssh`
-directly instead of being expanded by the local WSL shell first. This avoids
-incorrect `$HOME` expansion when using the GUI over WSL-backed OpenSSH.
+On Windows, SSH mode expects native Windows OpenSSH with a Windows-accessible
+key or ssh-agent identity. Password prompts and WSL-held keys are not available
+to the Windows binary.
 
 These beta binaries target recent Linux distributions and current Windows
 releases. Older platforms are not a support target for the GUI beta.
