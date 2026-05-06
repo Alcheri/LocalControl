@@ -333,33 +333,40 @@ IRC send and queue hooks.
 
 ### GUI beta app
 
-The optional Tk GUI is shipped as beta desktop binaries in `dist/`. The GUI
-source and private build tooling are not tracked in this repository.
+The optional GUI is available as beta desktop binaries in `dist/`. End users do
+not need Python, Tk, PyInstaller, or the private build tooling to run it.
 
-The packaging target is current mainstream releases only: recent Linux
-distributions and current Windows releases. Older platform versions are not a
-packaging or support target for this GUI beta.
+Use the binary that matches your desktop platform:
 
-Run the Linux binary from the repository root:
+- Linux: `dist/LocalControl-GUI`
+- Windows: `dist/LocalControl-GUI.exe`
+
+From a Linux shell in the repository root:
 
 ```bash
 ./dist/LocalControl-GUI
 ```
 
-Run the Windows binary from PowerShell or Explorer:
+From Windows PowerShell in the repository root:
 
 ```powershell
 .\dist\LocalControl-GUI.exe
 ```
+
+You can also start the Windows binary from Explorer by opening `dist` and
+double-clicking `LocalControl-GUI.exe`.
+
+The GUI connects to LocalControl through the same local socket or configured
+remote command path as `botctl`. Keep socket files and SSH access restricted to
+trusted local users because GUI access can issue owner-level bot commands.
 
 When the Windows GUI uses WSL-based SSH launchers such as `wsl.exe ssh`, it
 automatically inserts `--exec` so the remote command is passed to `ssh`
 directly instead of being expanded by the local WSL shell first. This avoids
 incorrect `$HOME` expansion when using the GUI over WSL-backed OpenSSH.
 
-For Linux, the current WSL-built binary is suitable for recent x86-64 desktop
-distributions. If you later decide to support older Linux releases, rebuild on
-the oldest supported distro or ship a more portable format such as an AppImage.
+These beta binaries target recent Linux distributions and current Windows
+releases. Older platforms are not a support target for the GUI beta.
 
 ---
 
