@@ -367,6 +367,10 @@ to the Windows binary.
 These beta binaries target recent Linux distributions and current Windows
 releases. Older platforms are not a support target for the GUI beta.
 
+The GUI binaries are distributed under the project's BSD 3-Clause licence. They
+may include bundled Python, Tcl/Tk, sv-ttk, and PyInstaller runtime components;
+their upstream licence terms continue to apply.
+
 ---
 
 ## Multi‑bot wrappers (optional)
