@@ -321,8 +321,9 @@ IRC send and queue hooks.
 
 ### GUI beta app
 
-The optional GUI is available as beta desktop binaries in `dist/`. End users do
-not need Python, Tk, PyInstaller, or the private build tooling to run it.
+The optional GUI apps are beta desktop builds in `dist/`. They are provided for
+testing and may change before a stable GUI release. End users do not need
+Python, Tk, PyInstaller, or the private build tooling to run them.
 
 Use the binary that matches your desktop platform:
 
