@@ -1,11 +1,6 @@
 <!-- LocalControl provides a UNIX socket for local command execution. -->
 
-<table>
-    <tr>
-        <td valign="middle"><img src="docs/images/localcontrol.svg" alt="" width="32" height="32"></td>
-        <td valign="middle"><h2>LocalControl</h2></td>
-    </tr>
-</table>
+<h2><img src="docs/images/localcontrol.svg" alt="" width="32" height="32" align="middle"> LocalControl</h2>
 
 [![Latest Release](https://img.shields.io/github/v/release/Alcheri/LocalControl?sort=semver)](https://github.com/Alcheri/LocalControl/releases/latest)
 [![Tests](https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml/badge.svg)](https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml)
