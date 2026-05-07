@@ -9,6 +9,8 @@ import unittest
 import socket
 import tempfile
 from pathlib import Path
+import importlib.machinery
+import types
 
 from supybot import test as supybot_test
 
@@ -16,6 +18,11 @@ try:
     from . import plugin
 except ImportError:  # pragma: no cover - allows direct pytest execution.
     import plugin
+
+BOTCTL_PATH = Path(__file__).with_name("botctl")
+BOTCTL_LOADER = importlib.machinery.SourceFileLoader("botctl_module", str(BOTCTL_PATH))
+botctl_module = types.ModuleType(BOTCTL_LOADER.name)
+BOTCTL_LOADER.exec_module(botctl_module)
 
 
 class LocalControlTestCase(supybot_test.PluginTestCase):
@@ -124,6 +131,26 @@ class TestLocalControlModule(unittest.TestCase):
 
         self.assertTrue(local_control._dispatch_lock.entered)
         self.assertEqual(dispatch_states, [True])
+
+    def test_read_command_line_handles_split_command(self):
+        class Client:
+            def __init__(self):
+                self.chunks = [b"sys", b"info\nignored"]
+
+            def recv(self, size):
+                return self.chunks.pop(0)
+
+        self.assertEqual(plugin._read_command_line(Client()), "sysinfo\n")
+
+    def test_botctl_read_reply_handles_multiple_chunks(self):
+        class Client:
+            def __init__(self):
+                self.chunks = [b"first ", b"second", b""]
+
+            def recv(self, size):
+                return self.chunks.pop(0)
+
+        self.assertEqual(botctl_module.read_reply(Client()), b"first second")
 
     def test_optional_tcp_server_binds_to_loopback_when_enabled(self):
         probe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

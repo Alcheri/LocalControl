@@ -49,3 +49,4 @@ build/
 /dist/*
 !/dist/LocalControl-GUI
 !/dist/LocalControl-GUI.exe
+!/dist/To-Do.md

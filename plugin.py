@@ -21,6 +21,8 @@ import errno
 
 CLIENT_TIMEOUT_SECONDS = 5.0
 SOCKET_MODE = 0o600
+COMMAND_READ_CHUNK_BYTES = 4096
+MAX_COMMAND_BYTES = 65536
 TCP_BACKLOG = 1
 TCP_BIND_RETRIES = 10
 TCP_BIND_RETRY_DELAY_SECONDS = 0.1
@@ -84,6 +86,25 @@ def _command_summary(command):
     if not parts:
         return "", 0
     return parts[0], len(parts) - 1
+
+
+def _read_command_line(conn):
+    chunks = []
+    received = 0
+
+    while received < MAX_COMMAND_BYTES:
+        chunk = conn.recv(min(COMMAND_READ_CHUNK_BYTES, MAX_COMMAND_BYTES - received))
+        if not chunk:
+            break
+        chunks.append(chunk)
+        received += len(chunk)
+        if b"\n" in chunk:
+            break
+
+    data = b"".join(chunks)
+    if b"\n" in data:
+        data = data.split(b"\n", 1)[0] + b"\n"
+    return data.decode("utf-8")
 
 
 def _is_loopback_host(host):
@@ -218,8 +239,7 @@ class LocalControl(callbacks.Plugin):
 
         try:
             conn.settimeout(CLIENT_TIMEOUT_SECONDS)
-            # Read the incoming command (single line)
-            raw_data = conn.recv(4096).decode("utf-8")
+            raw_data = _read_command_line(conn)
             data = raw_data.strip()
 
             if not data:

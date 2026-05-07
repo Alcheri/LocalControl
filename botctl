@@ -5,6 +5,8 @@ import socket
 import sys
 
 BOTCTL_VERSION = "1.1.0"
+REPLY_CHUNK_BYTES = 4096
+MAX_REPLY_BYTES = 65536
 
 # ------------------------------------------------------------
 # DEFAULT SOCKET PATH (env override → default)
@@ -34,13 +36,30 @@ def send_command(socket_path: str, line: str) -> str:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
             s.connect(socket_path)
             s.sendall((line + "\n").encode("utf-8"))
-            data = s.recv(65536)
+            s.shutdown(socket.SHUT_WR)
+            data = read_reply(s)
     except ConnectionRefusedError:
         raise BotCtlError("Connection refused. Is the bot running?")
     except Exception as e:
         raise BotCtlError(f"Socket error: {e}")
 
-    return data.decode("utf-8").strip()
+    return data.decode("utf-8", errors="replace").strip()
+
+
+def read_reply(client: socket.socket) -> bytes:
+    chunks = []
+    received = 0
+
+    while received < MAX_REPLY_BYTES:
+        chunk = client.recv(min(REPLY_CHUNK_BYTES, MAX_REPLY_BYTES - received))
+        if not chunk:
+            break
+        chunks.append(chunk)
+        received += len(chunk)
+
+    if received >= MAX_REPLY_BYTES:
+        chunks.append(b"\n[reply truncated]")
+    return b"".join(chunks)
 
 
 # ------------------------------------------------------------
