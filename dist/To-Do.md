@@ -36,27 +36,27 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 
 ### Normal Use
 
-- Launch, close, relaunch
-- Settings persist
-- Window geometry persists
-- Command history persists
+- [x] Launch, close, relaunch
+- [x] Settings persist
+- [x] Window geometry persists
+- [x] Command history persists
 
 ### Transport Failures
 
-- Missing UNIX socket
-- TCP listener disabled
-- Wrong TCP port
-- SSH host unreachable
-- SSH unknown host
-- SSH auth failure
+- [ ] Missing UNIX socket (Linux only)
+- [ ] TCP listener disabled
+- [x] Wrong TCP port
+- [ ] SSH host unreachable
+- [ ] SSH unknown host
+- [ ] SSH auth failure
 
 ### Command Behaviour
 
-- Normal short reply
-- Long reply
-- No reply
-- Plugin error reply
-- Repeated commands
+- [ ] Normal short reply
+- [ ] Long reply
+- [ ] No reply
+- [ ] Plugin error reply
+- [ ] Repeated commands
 
 ## Windows GUI UI Fine Tuning
 
