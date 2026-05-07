@@ -69,8 +69,8 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 - ~~Keep the GUI 100% free of WSL references and WSL launcher support.~~
 - Shorten SSH authentication failure output so it is clear without being noisy.
 - Consider a separate "Test connection" action so users can verify OpenSSH authentication without sending `sysinfo`.
-- Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.
-- Add right-click mouse menu options for editable fields in Settings.
+- ~~Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.~~
+- ~~Add right-click mouse menu options for editable fields in Settings.~~
 - Reconsider current fonts for the UI.
 - Consider coloured command headers/output styling so commands stand out.
 - ~~Remove "UNIX socket: missing" and "LocalControl via UNIX: inactive" from the Windows LocalControl UI/status output.~~
@@ -79,8 +79,8 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 
 - Keep the editable SSH client field.
 - Keep the default or recommended SSH command as `ssh`.
-- Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.
-- Add right-click mouse menu options for editable fields in Settings.
+- ~~Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.~~
+- ~~Add right-click mouse menu options for editable fields in Settings.~~
 - Consider coloured command headers/output styling so commands stand out.
 
 ## Both UIs
