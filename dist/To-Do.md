@@ -43,28 +43,28 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 
 ### Transport Failures
 
-- [ ] Missing UNIX socket (Linux only)
-- [ ] TCP listener disabled
+- [x] Missing UNIX socket (Linux only)
+- [x] TCP listener disabled
 - [x] Wrong TCP port
-- [ ] SSH host unreachable
-- [ ] SSH unknown host
-- [ ] SSH auth failure
+- [x] SSH host unreachable
+- [x] SSH unknown host
+- [x] SSH auth failure
 
 ### Command Behaviour
 
-- [ ] Normal short reply
-- [ ] Long reply
+- [x] Normal short reply
+- [x] Long reply
 - [ ] No reply
-- [ ] Plugin error reply
-- [ ] Repeated commands
+- [x] Plugin error reply
+- [x] Repeated commands
 
 ## Windows GUI UI Fine Tuning
 
 - ~~Remove the editable SSH client field.~~
 - ~~Use native Windows OpenSSH (`ssh`) internally for SSH mode.~~
-- Add concise Windows SSH mode helper text:
+- ~~Add concise Windows SSH mode helper text:~~
 
-  > Windows OpenSSH needs a key or ssh-agent identity. Password prompts are not available in the GUI.
+  > ~~Windows OpenSSH needs a key or ssh-agent identity. Password prompts are not available in the GUI.~~
 
 - ~~Keep the GUI 100% free of WSL references and WSL launcher support.~~
 - Shorten SSH authentication failure output so it is clear without being noisy.
@@ -77,8 +77,8 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 
 ## Linux GUI UI Fine Tuning
 
-- Keep the editable SSH client field.
-- Keep the default or recommended SSH command as `ssh`.
+- ~~Keep the editable SSH client field.~~
+- ~~Keep the default or recommended SSH command as `ssh`.~~
 - ~~Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.~~
 - ~~Add right-click mouse menu options for editable fields in Settings.~~
 - ~~Consider coloured command headers/output styling so commands stand out.~~
