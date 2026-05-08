@@ -6,10 +6,9 @@
 [![Tests](https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml/badge.svg)](https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml)
 [![Lint](https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml/badge.svg)](https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml)
 [![CodeQL](https://github.com/Alcheri/LocalControl/actions/workflows/codeql.yml/badge.svg)](https://github.com/Alcheri/LocalControl/security/code-scanning)
-![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)
-![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
-![Limnoria](https://img.shields.io/badge/limnoria-compatible-brightgreen.svg)
-![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)
+[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Limnoria](https://img.shields.io/badge/limnoria-compatible-brightgreen.svg)](https://github.com/ProgVal/Limnoria)
 
 LocalControl is a minimal UNIX-socket control interface for Limnoria bots. It
 provides a local administrative command channel without exposing a separate
