@@ -71,8 +71,8 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 - Consider a separate "Test connection" action so users can verify OpenSSH authentication without sending `sysinfo`.
 - ~~Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.~~
 - ~~Add right-click mouse menu options for editable fields in Settings.~~
-- Reconsider current fonts for the UI.
-- Consider coloured command headers/output styling so commands stand out.
+- ~~Reconsider current fonts for the UI.~~
+- ~~Consider coloured command headers/output styling so commands stand out.~~
 - ~~Remove "UNIX socket: missing" and "LocalControl via UNIX: inactive" from the Windows LocalControl UI/status output.~~
 
 ## Linux GUI UI Fine Tuning
@@ -81,7 +81,7 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 - Keep the default or recommended SSH command as `ssh`.
 - ~~Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.~~
 - ~~Add right-click mouse menu options for editable fields in Settings.~~
-- Consider coloured command headers/output styling so commands stand out.
+- ~~Consider coloured command headers/output styling so commands stand out.~~
 
 ## Both UIs
 
