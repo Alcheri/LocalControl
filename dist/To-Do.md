@@ -26,9 +26,9 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 
 ## Error Logging Follow-up
 
-- Add optional GUI diagnostic logging to a `botctl_gui.json`-controlled location, disabled or minimal by default.
-- Log transport type, endpoint label, command summary, timestamp, duration, and error class/message.
-- Do not log full command text by default; redact sensitive command arguments if full logging is ever added.
+- ~~Add optional GUI diagnostic logging to a `botctl_gui.json`-controlled location, disabled or minimal by default.~~
+- ~~Log transport type, endpoint label, command summary, timestamp, duration, and error class/message.~~
+- ~~Do not log full command text by default; redact sensitive command arguments if full logging is ever added.~~
 - Keep plugin-side logging quiet and structured: status, request id, duration, reply count, command summary.
 - Consider a "Copy diagnostics" action in the GUI for the last failed request.
 
