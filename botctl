@@ -13,7 +13,8 @@ MAX_REPLY_BYTES = 65536
 # ------------------------------------------------------------
 DEFAULT_SOCKET = os.path.expanduser(
     os.environ.get(
-        "BOT_CONTROL_SOCKET", "~/runbot/plugins/LocalControl/.localcontrol.sock"
+        "BOT_CONTROL_SOCKET",
+        "~/runbot/plugins/LocalControl/.localcontrol.sock",
     )
 )
 
@@ -77,7 +78,9 @@ def handle_bot(args):
 # Main CLI
 # ------------------------------------------------------------
 def main():
-    parser = argparse.ArgumentParser(description="LocalControl CLI for Limnoria bots")
+    parser = argparse.ArgumentParser(
+        description="LocalControl CLI for Limnoria bots"
+    )
 
     # Global socket override
     parser.add_argument(

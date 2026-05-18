@@ -17,7 +17,9 @@ from supybot import world
 __version__ = "1.1.0"
 
 # XXX Replace this with an appropriate author or supybot.Author instance.
-__author__ = supybot.Author("Barry Suridge", "Alcheri", "barry.suridge@gmail.com")
+__author__ = supybot.Author(
+    "Barry Suridge", "Alcheri", "barry.suridge@gmail.com"
+)
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
 __contributors__ = {}

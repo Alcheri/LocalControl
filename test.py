@@ -20,7 +20,9 @@ except ImportError:  # pragma: no cover - allows direct pytest execution.
     import plugin
 
 BOTCTL_PATH = Path(__file__).with_name("botctl")
-BOTCTL_LOADER = importlib.machinery.SourceFileLoader("botctl_module", str(BOTCTL_PATH))
+BOTCTL_LOADER = importlib.machinery.SourceFileLoader(
+    "botctl_module", str(BOTCTL_PATH)
+)
 botctl_module = types.ModuleType(BOTCTL_LOADER.name)
 BOTCTL_LOADER.exec_module(botctl_module)
 
@@ -42,7 +44,9 @@ class TestLocalControlModule(unittest.TestCase):
 
             plugin._restrict_socket_permissions(socket_path)
 
-            self.assertEqual(socket_path.stat().st_mode & 0o777, plugin.SOCKET_MODE)
+            self.assertEqual(
+                socket_path.stat().st_mode & 0o777, plugin.SOCKET_MODE
+            )
 
     def test_idle_client_times_out(self):
         class IdleClient:

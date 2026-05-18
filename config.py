@@ -41,7 +41,9 @@ conf.registerGlobalValue(
     "socketRequestFullCommandLogging",
     registry.Boolean(
         False,
-        _("""Whether LocalControl logs full socket command text after redaction."""),
+        _(
+            """Whether LocalControl logs full socket command text after redaction."""
+        ),
     ),
 )
 conf.registerGlobalValue(
@@ -73,7 +75,9 @@ conf.registerGlobalValue(
     "tcpAllowRemote",
     registry.Boolean(
         False,
-        _("""Whether the optional TCP listener may bind to non-loopback hosts."""),
+        _(
+            """Whether the optional TCP listener may bind to non-loopback hosts."""
+        ),
     ),
 )
 

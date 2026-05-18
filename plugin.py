@@ -93,7 +93,9 @@ def _read_command_line(conn):
     received = 0
 
     while received < MAX_COMMAND_BYTES:
-        chunk = conn.recv(min(COMMAND_READ_CHUNK_BYTES, MAX_COMMAND_BYTES - received))
+        chunk = conn.recv(
+            min(COMMAND_READ_CHUNK_BYTES, MAX_COMMAND_BYTES - received)
+        )
         if not chunk:
             break
         chunks.append(chunk)
@@ -177,9 +179,13 @@ class LocalControl(callbacks.Plugin):
         host = self.registryValue("tcpListenHost")
         port = self.registryValue("tcpListenPort")
         if port < 1 or port > 65535:
-            log.warning("LocalControl: TCP listener disabled; invalid port %r" % port)
+            log.warning(
+                "LocalControl: TCP listener disabled; invalid port %r" % port
+            )
             return None
-        if not self.registryValue("tcpAllowRemote") and not _is_loopback_host(host):
+        if not self.registryValue("tcpAllowRemote") and not _is_loopback_host(
+            host
+        ):
             log.warning(
                 "LocalControl: TCP listener disabled; %s is not loopback and "
                 "tcpAllowRemote is false" % host
@@ -207,7 +213,8 @@ class LocalControl(callbacks.Plugin):
                 if e.errno != errno.EADDRINUSE or attempt == TCP_BIND_RETRIES:
                     server.close()
                     log.warning(
-                        "LocalControl: TCP listener disabled; bind failed: %s" % e
+                        "LocalControl: TCP listener disabled; bind failed: %s"
+                        % e
                     )
                     return False
                 time.sleep(TCP_BIND_RETRY_DELAY_SECONDS)
@@ -325,7 +332,9 @@ class LocalControl(callbacks.Plugin):
         except Exception as e:
             err = f"Error: {e}\n"
             conn.sendall(err.encode("utf-8"))
-            self._log_socket_request(req_id, raw_data, err, replies=0, started=started)
+            self._log_socket_request(
+                req_id, raw_data, err, replies=0, started=started
+            )
 
         finally:
             conn.close()
@@ -438,7 +447,9 @@ class LocalControl(callbacks.Plugin):
     @wrap([])
     def info(self, irc, msg, args):
         """Shows information about the LocalControl plugin."""
-        irc.reply("LocalControl provides a UNIX socket for local command execution.")
+        irc.reply(
+            "LocalControl provides a UNIX socket for local command execution."
+        )
 
 
 Class = LocalControl
