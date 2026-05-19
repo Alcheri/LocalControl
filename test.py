@@ -146,6 +146,29 @@ class TestLocalControlModule(unittest.TestCase):
 
         self.assertEqual(plugin._read_command_line(Client()), "sysinfo\n")
 
+    def test_read_command_line_rejects_oversized_command(self):
+        class Client:
+            def recv(self, size):
+                return b"x" * size
+
+        with self.assertRaisesRegex(ValueError, "maximum size"):
+            plugin._read_command_line(Client())
+
+    def test_guarded_client_handler_releases_client_slot(self):
+        local_control = object.__new__(plugin.LocalControl)
+        local_control._client_slots = plugin.threading.BoundedSemaphore(1)
+        local_control._client_slots.acquire()
+        calls = []
+
+        def handle_client(conn):
+            calls.append(conn)
+
+        local_control._handle_client = handle_client
+        local_control._handle_client_guarded("client")
+
+        self.assertEqual(calls, ["client"])
+        self.assertTrue(local_control._client_slots.acquire(blocking=False))
+
     def test_botctl_read_reply_handles_multiple_chunks(self):
         class Client:
             def __init__(self):

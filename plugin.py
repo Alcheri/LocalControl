@@ -5,24 +5,25 @@
 #
 ###
 
-from supybot import callbacks, ircmsgs, ircutils, log, world
-from supybot.commands import *
-from supybot.i18n import PluginInternationalization
-
-_ = PluginInternationalization("LocalControl")
-
+import errno
+import ipaddress
+import itertools
 import os
 import socket
 import threading
 import time
-import itertools
-import ipaddress
-import errno
+
+from supybot import callbacks, ircmsgs, ircutils, log, world
+from supybot.commands import wrap
+from supybot.i18n import PluginInternationalization
+
+_ = PluginInternationalization("LocalControl")
 
 CLIENT_TIMEOUT_SECONDS = 5.0
 SOCKET_MODE = 0o600
 COMMAND_READ_CHUNK_BYTES = 4096
 MAX_COMMAND_BYTES = 65536
+MAX_CONCURRENT_CLIENTS = 8
 TCP_BACKLOG = 1
 TCP_BIND_RETRIES = 10
 TCP_BIND_RETRY_DELAY_SECONDS = 0.1
@@ -106,6 +107,8 @@ def _read_command_line(conn):
     data = b"".join(chunks)
     if b"\n" in data:
         data = data.split(b"\n", 1)[0] + b"\n"
+    elif received >= MAX_COMMAND_BYTES:
+        raise ValueError("command exceeds maximum size")
     return data.decode("utf-8")
 
 
@@ -128,6 +131,7 @@ class LocalControl(callbacks.Plugin):
         self.__parent = super(LocalControl, self)
         self.__parent.__init__(irc)
         self._dispatch_lock = threading.Lock()
+        self._client_slots = threading.BoundedSemaphore(MAX_CONCURRENT_CLIENTS)
 
         plugin_dir = os.path.dirname(__file__)
         self.socket_path = os.path.join(plugin_dir, ".localcontrol.sock")
@@ -234,9 +238,19 @@ class LocalControl(callbacks.Plugin):
                 if world.dying:
                     return
                 raise
+            if not self._client_slots.acquire(blocking=False):
+                conn.close()
+                continue
             threading.Thread(
-                target=self._handle_client, args=(conn,), daemon=True
+                target=self._handle_client_guarded, args=(conn,), daemon=True
             ).start()
+
+    # ----------------------------------------------------------------------
+    def _handle_client_guarded(self, conn):
+        try:
+            self._handle_client(conn)
+        finally:
+            self._client_slots.release()
 
     # ----------------------------------------------------------------------
     def _handle_client(self, conn):

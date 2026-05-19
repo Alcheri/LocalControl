@@ -11,10 +11,11 @@ try:
     from supybot.i18n import PluginInternationalization
 
     _ = PluginInternationalization("LocalControl")
-except:
+except Exception:
     # Placeholder that allows to run the plugin on a bot
     # without the i18n module
-    _ = lambda x: x
+    def _(x):
+        return x
 
 
 def configure(advanced):
@@ -22,8 +23,6 @@ def configure(advanced):
     # a bool that specifies whether the user identified themself as an advanced
     # user or not.  You should effect your configuration by manipulating the
     # registry as appropriate.
-    from supybot.questions import expect, anything, something, yn
-
     conf.registerPlugin("LocalControl", True)
 
 

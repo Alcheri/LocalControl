@@ -9,7 +9,6 @@
 LocalControl: Minimal Working Local Control Plugin
 """
 
-import sys
 import supybot
 from supybot import world
 
@@ -38,7 +37,7 @@ reload(plugin)
 # reloaded when this plugin is reloaded.  Don't forget to import them as well!
 
 if world.testing:
-    from . import test
+    from . import test as test
 
 Class = plugin.Class
 configure = config.configure
