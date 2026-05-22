@@ -2,13 +2,15 @@
 
 ## <img src="docs/images/localcontrol.svg" alt="" width="48" height="48" align="absmiddle"> LocalControl
 
-[![Latest Release](https://img.shields.io/github/v/release/Alcheri/LocalControl?sort=semver)](https://github.com/Alcheri/LocalControl/releases/latest)
-[![Tests](https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml/badge.svg)](https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml)
-[![Lint](https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml/badge.svg)](https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml)
-[![CodeQL](https://github.com/Alcheri/LocalControl/actions/workflows/codeql.yml/badge.svg)](https://github.com/Alcheri/LocalControl/security/code-scanning)
-[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Limnoria](https://img.shields.io/badge/limnoria-compatible-brightgreen.svg)](https://github.com/ProgVal/Limnoria)
+<!-- README_HEADER:start -->
+[![Latest Release][latest-release-badge]][latest-release-link]
+[![Tests][tests-badge]][tests-link]
+[![Lint][lint-badge]][lint-link]
+[![CodeQL][codeql-badge]][codeql-link]
+[![Python][python-badge]][python-link]
+[![Code style: black][black-badge]][black-link]
+[![Limnoria][limnoria-badge]][limnoria-link]
+<!-- README_HEADER:end -->
 
 LocalControl is a minimal UNIX-socket control interface for Limnoria bots. It
 provides a local administrative command channel without exposing a separate
@@ -394,3 +396,25 @@ like `botctl`.
 ## Licence
 
 See [LICENCE.md](LICENCE.md).
+
+<!-- Badge reference definitions -->
+[latest-release-badge]: https://img.shields.io/github/v/release/Alcheri/LocalControl?sort=semver
+[latest-release-link]: https://github.com/Alcheri/LocalControl/releases/latest
+
+[tests-badge]: https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml/badge.svg
+[tests-link]: https://github.com/Alcheri/LocalControl/actions/workflows/tests.yml
+
+[lint-badge]: https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml/badge.svg
+[lint-link]: https://github.com/Alcheri/LocalControl/actions/workflows/lint.yml
+
+[codeql-badge]: https://github.com/Alcheri/LocalControl/actions/workflows/codeql.yml/badge.svg
+[codeql-link]: https://github.com/Alcheri/LocalControl/security/code-scanning
+
+[python-badge]: https://img.shields.io/badge/python-3.11.2-blue.svg
+[python-link]: https://www.python.org/downloads/release/python-3112/
+
+[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
+[black-link]: https://github.com/psf/black
+
+[limnoria-badge]: https://img.shields.io/badge/limnoria-compatible-brightgreen.svg
+[limnoria-link]: https://github.com/ProgVal/Limnoria
