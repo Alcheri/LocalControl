@@ -9,6 +9,7 @@ authors = [
     { name = "Barry KW Suridge" }
 ]
 readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "limnoria",
 ]
