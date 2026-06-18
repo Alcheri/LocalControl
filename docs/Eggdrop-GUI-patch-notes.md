@@ -2,17 +2,28 @@
 
 ## Summary
 
-This patch adds the first Eggdrop partyline workflow to the LocalControl GUI.
-The feature is intentionally scoped to local Pudding testing before any remote
-Eggdrop upgrade or remote partyline work.
+This patch adds the first Eggdrop partyline workflow to the LocalControl GUI,
+including direct Telnet connections and managed SSH tunnels.
 
 ## Added
 
-- Added an `Eggdrops` tab to the LocalControl GUI.
+- Added an `Eggdrop` tab to the LocalControl GUI.
+- Renamed the visible control tabs to distinguish `Limnoria` command/reply
+  control from `Eggdrop` partyline control.
+- Renamed the shared LocalControl settings view to `Limnoria Settings`.
+- Made the Windows LocalControl settings view SSH-first by hiding the local TCP
+  host/port row; WSL-local Limnoria bots remain a Linux GUI workflow.
 - Added local Pudding defaults:
   - host: `127.0.0.1`;
   - port: `3333`;
   - handle: `Barry`.
+- Added a transport selector for Direct and SSH tunnel modes.
+- Added editable Eggdrop Telnet host and port settings.
+- Added editable SSH user, SSH host, SSH port, remote Telnet host, and remote
+  Telnet port settings for tunnelled connections.
+- SSH tunnel mode starts an `ssh -N -L` tunnel before connecting to Eggdrop.
+- Managed SSH tunnels are closed on Disconnect or GUI exit.
+- Transport switching is disabled while connected.
 - Added interactive Telnet session handling for Eggdrop partyline access.
 - Added manual, prompt-aware login:
   - handle prompts focus/select the handle field;
@@ -33,6 +44,9 @@ Eggdrop upgrade or remote partyline work.
 - Pending password redaction tokens are cleared on disconnect and before new
   connection attempts.
 - Eggdrop diagnostic logging records connection/action metadata only.
+- Managed SSH tunnel start/failure metadata can be written to diagnostics.
+- SSH tunnel connection waits report early tunnel exits separately from local
+  port timeouts.
 - Diagnostics do not log Eggdrop passwords or full transcript content.
 - Sensitive-looking Eggdrop input lines are excluded from persisted history.
 
@@ -48,9 +62,13 @@ Eggdrop upgrade or remote partyline work.
 
 - Unix `LocalControl-GUI` was rebuilt and tested against local Pudding.
 - Windows `LocalControl-GUI.exe` was rebuilt and tested against local Pudding.
+- Windows native OpenSSH key authentication was configured and tested for
+  private remote Eggdrop accounts.
+- Linux and Windows GUI validation passed for local Pudding and private remote
+  Eggdrop settings entered through the UI.
 - Windows validation passed for:
   - application launch;
-  - Eggdrops tab rendering;
+  - Eggdrop tab rendering;
   - prompt-aware focus changes;
   - password redaction;
   - Up/Down input history;
@@ -61,8 +79,6 @@ Eggdrop upgrade or remote partyline work.
 
 ## Deferred
 
-- Remote Eggdrop support remains out of scope until the local Pudding workflow
-  and LocalControl API are stable.
 - Remote Eggdrop listener-port instability needs separate investigation.
 - SSH remains an external tunnel transport, not a native Eggdrop partyline
   listener.
