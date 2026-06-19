@@ -54,5 +54,5 @@ build/
 *.spec
 /dist/*
 !/dist/LocalControl-GUI
-!/dist/LocalControl-GUI.exe
+!/dist/LocalControl-GUI-Setup.exe
 !/dist/To-Do.md
