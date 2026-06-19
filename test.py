@@ -265,5 +265,36 @@ class TestLocalControlModule(unittest.TestCase):
         self.assertNotIn("abc123", lines[0])
         self.assertNotIn("xyz", lines[0])
 
+    def test_socket_error_logging_uses_structured_status_and_error(self):
+        lines = []
+        original_info = plugin.log.info
+        local_control = object.__new__(plugin.LocalControl)
+        local_control.registryValue = lambda name: {
+            "socketRequestLogging": True,
+            "socketRequestFullCommandLogging": False,
+        }[name]
+
+        try:
+            plugin.log.info = lines.append
+            local_control._log_socket_request(
+                3,
+                "config networks.Libera.sasl.password hunter2",
+                "error",
+                replies=0,
+                started=0.0,
+                error="permission denied for password hunter2",
+            )
+        finally:
+            plugin.log.info = original_info
+
+        self.assertEqual(len(lines), 1)
+        self.assertIn("status=error", lines[0])
+        self.assertIn('command="config" argc=2', lines[0])
+        self.assertIn(
+            'error="permission denied for password [redacted]"', lines[0]
+        )
+        self.assertNotIn("hunter2", lines[0])
+        self.assertNotIn("status=Error:", lines[0])
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

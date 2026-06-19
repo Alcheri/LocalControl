@@ -1,0 +1,30 @@
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0),
+    prodvers=(1, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo([
+      StringTable(
+        '040904B0',
+        [
+          StringStruct('CompanyName', 'Barry'),
+          StringStruct('FileDescription', 'LocalControl GUI Beta'),
+          StringStruct('FileVersion', '1.0.0-beta.1'),
+          StringStruct('InternalName', 'LocalControl-GUI'),
+          StringStruct('OriginalFilename', 'LocalControl-GUI.exe'),
+          StringStruct('ProductName', 'LocalControl GUI Beta'),
+          StringStruct('ProductVersion', '1.0.0-beta.1'),
+          StringStruct('LegalCopyright', 'Copyright © 2026 Barry'),
+        ]
+      )
+    ]),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)

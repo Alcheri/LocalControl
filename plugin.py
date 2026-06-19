@@ -347,7 +347,12 @@ class LocalControl(callbacks.Plugin):
             err = f"Error: {e}\n"
             conn.sendall(err.encode("utf-8"))
             self._log_socket_request(
-                req_id, raw_data, err, replies=0, started=started
+                req_id,
+                raw_data,
+                "error",
+                replies=0,
+                started=started,
+                error=str(e),
             )
 
         finally:
@@ -375,7 +380,7 @@ class LocalControl(callbacks.Plugin):
             full_cmd = _redact_command_text(" ".join(command.split()))[:200]
             line += ' full_cmd="%s"' % full_cmd
         if error:
-            err = " ".join(error.split())[:200]
+            err = _redact_command_text(" ".join(error.split()))[:200]
             line += ' error="%s"' % err
         log.info(line)
 

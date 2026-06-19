@@ -1,0 +1,5 @@
+# GUI security check tool.
+bandit==1.9.4
+
+# Optional Tk theme used when importable; the GUI falls back to standard Tk.
+sv-ttk==2.6.1

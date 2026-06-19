@@ -29,8 +29,8 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 - ~~Add optional GUI diagnostic logging to a `botctl_gui.json`-controlled location, disabled or minimal by default.~~
 - ~~Log transport type, endpoint label, command summary, timestamp, duration, and error class/message.~~
 - ~~Do not log full command text by default; redact sensitive command arguments if full logging is ever added.~~
-- Keep plugin-side logging quiet and structured: status, request id, duration, reply count, command summary.
-- Consider a "Copy diagnostics" action in the GUI for the last failed request.
+- ~~Keep plugin-side logging quiet and structured: status, request id, duration, reply count, command summary.~~
+- ~~Add a "Copy diagnostics" action in the GUI for the last failed request.~~
 
 ## Beta Binary Testing
 
@@ -67,8 +67,8 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
   > ~~Windows OpenSSH needs a key or ssh-agent identity. Password prompts are not available in the GUI.~~
 
 - ~~Keep the GUI 100% free of WSL references and WSL launcher support.~~
-- Shorten SSH authentication failure output so it is clear without being noisy.
-- Consider a separate "Test connection" action so users can verify OpenSSH authentication without sending `sysinfo`.
+- ~~Shorten SSH authentication failure output so it is clear without being noisy.~~
+- ~~Add a separate "Test SSH" action so users can verify OpenSSH authentication without sending `sysinfo`.~~
 - ~~Add server settings drop-down menus for SSH user and SSH host, storing saved values in `botctl_gui.json`.~~
 - ~~Add right-click mouse menu options for editable fields in Settings.~~
 - ~~Reconsider current fonts for the UI.~~

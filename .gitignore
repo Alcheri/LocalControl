@@ -43,8 +43,11 @@ Thumbs.db
 *.mmd
 *.log
 
-# Local GUI source, settings, and private build tooling
-tools/
+# Generated GUI build artefacts
+tools/__pycache__/
+tools/build/
+tools/dist/
+tools/*.spec
 
 # Packaging artefacts
 build/
