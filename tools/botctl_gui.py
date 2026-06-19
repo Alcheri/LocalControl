@@ -1007,6 +1007,7 @@ class LocalControlGui:
                     include_unix=IS_LINUX,
                     include_tcp=IS_LINUX,
                 ),
+                "",
             )
         )
 
