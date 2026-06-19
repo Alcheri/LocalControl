@@ -85,6 +85,6 @@ That keeps the current workflow intact but stops the top of the GUI from becomin
 
 ## Both UIs
 
-- Use `ttk.Notebook` in both GUI apps to keep LocalControl commands, Settings, and future sections separated.
+- ~~Use `ttk.Notebook` in both GUI apps to keep LocalControl commands, Settings, and future sections separated.~~
 - ~~Add an in-app Help button or Help tab covering transports, Windows OpenSSH keys, diagnostics, settings paths, and basic troubleshooting.~~
 - Think of a better name for the GUI apps.
