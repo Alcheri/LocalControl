@@ -75,7 +75,7 @@ LocalControl123!local123@localcontrol.invalid
 To allow this synthetic user to execute owner-level commands, you **must** add a
 matching hostmask to your Limnoria user account.
 
-In your Limnoria console (or via IRC as the bot owner):
+Via IRC as the bot owner:
 
 ```text
 /msg <bot> user hostmask add <your-account> LocalControl*!local*@localcontrol.invalid
