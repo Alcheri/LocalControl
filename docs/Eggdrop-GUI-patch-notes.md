@@ -21,6 +21,8 @@ including direct Telnet connections and managed SSH tunnels.
 - Added editable Eggdrop Telnet host and port settings.
 - Added editable SSH user, SSH host, SSH port, remote Telnet host, and remote
   Telnet port settings for tunnelled connections.
+- Added Eggdrop drop-down history for SSH user, SSH host, and remote Telnet
+  port settings.
 - SSH tunnel mode starts an `ssh -N -L` tunnel before connecting to Eggdrop.
 - Managed SSH tunnels are closed on Disconnect or GUI exit.
 - Transport switching is disabled while connected.
