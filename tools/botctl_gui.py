@@ -1314,10 +1314,15 @@ class LocalControlGui:
 
     def _poll_results(self) -> None:
         try:
-            ok, command, message, diagnostic = self.results.get_nowait()
+            result = self.results.get_nowait()
         except queue.Empty:
             self.root.after(100, self._poll_results)
             return
+        if len(result) == 3:
+            ok, command, message = result
+            diagnostic = ""
+        else:
+            ok, command, message, diagnostic = result
 
         try:
             prefix = "Reply" if ok else "Error"
