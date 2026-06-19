@@ -979,13 +979,12 @@ class LocalControlGui:
         if probe_request["ssh_enabled"] and probe_request["ssh_host"]:
             ssh_ok = False
             try:
-                send_ssh_command(
+                test_ssh_connection(
                     str(probe_request["ssh_host"]),
                     int(str(probe_request["ssh_port"])),
                     str(probe_request["ssh_user"]),
                     str(probe_request["ssh_command"]),
                     str(probe_request["remote_path"]),
-                    PROBE_COMMAND,
                 )
             except Exception as exc:
                 details.append("SSH error: %s" % exc)
@@ -1319,14 +1318,20 @@ class LocalControlGui:
             self.root.after(100, self._poll_results)
             return
 
-        prefix = "Reply" if ok else "Error"
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        self._append_command_output(timestamp, command, prefix, message, ok)
-        if not ok and diagnostic:
-            self._set_last_failed_diagnostic(diagnostic)
-        self.status_var.set("Ready")
-        self._set_busy(False)
-        self.root.after(100, self._poll_results)
+        try:
+            prefix = "Reply" if ok else "Error"
+            timestamp = datetime.now().strftime("%H:%M:%S")
+            self._append_command_output(
+                timestamp, command, prefix, message, ok
+            )
+            if not ok and diagnostic:
+                self._set_last_failed_diagnostic(diagnostic)
+            self.status_var.set("Ready")
+        except tk.TclError as exc:
+            self.status_var.set(f"Display error: {exc}")
+        finally:
+            self._set_busy(False)
+            self.root.after(100, self._poll_results)
 
     def _set_busy(self, busy: bool) -> None:
         state = "disabled" if busy else "normal"
