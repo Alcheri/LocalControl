@@ -326,10 +326,10 @@ The optional GUI apps are beta desktop builds in `dist/`. They are provided for
 testing and may change before a stable GUI release. End users do not need
 Python, Tk, PyInstaller, or the private build tooling to run them.
 
-Use the binary that matches your desktop platform:
+Use the package that matches your desktop platform:
 
 - Linux: `dist/LocalControl-GUI`
-- Windows: `dist/LocalControl-GUI.exe`
+- Windows 11: `dist/LocalControl-GUI-Setup.exe`
 
 From a Linux shell in the repository root:
 
@@ -337,32 +337,66 @@ From a Linux shell in the repository root:
 ./dist/LocalControl-GUI
 ```
 
-From Windows PowerShell in the repository root:
+On Windows 11, run the installer from Explorer or PowerShell:
 
 ```powershell
-.\dist\LocalControl-GUI.exe
+.\dist\LocalControl-GUI-Setup.exe
 ```
 
-You can also start the Windows binary from Explorer by opening `dist` and
-double-clicking `LocalControl-GUI.exe`.
+The installer adds LocalControl GUI to the current user's Windows profile and
+can create shortcuts. The standalone Windows executable is now a build input for
+the installer, not the recommended distribution file.
 
 The GUI connects to LocalControl through the same local socket or configured
 remote command path as `botctl`. Keep socket files and SSH access restricted to
 trusted local users because GUI access can issue owner-level bot commands.
 
-On Windows, SSH mode expects native Windows OpenSSH with a Windows-accessible
+On Windows 11, SSH mode uses native Windows OpenSSH with a Windows-accessible
 key or ssh-agent identity. Password prompts and WSL-held keys are not available
-to the Windows binary.
+to the Windows app.
 
-Before using SSH mode on Windows, verify that native OpenSSH can authenticate
-without a password prompt:
+#### Creating a Windows SSH key for a remote Unix-like server
+
+Open PowerShell on Windows and check whether you already have a key:
+
+```powershell
+Test-Path $env:USERPROFILE\.ssh\id_ed25519.pub
+```
+
+If that returns `False`, create a new key:
+
+```powershell
+ssh-keygen -t ed25519 -f $env:USERPROFILE\.ssh\id_ed25519 -C "$env:USERNAME@Windows"
+```
+
+Use a passphrase if you want the key protected at rest. If you use a passphrase,
+add the key to the Windows SSH agent:
+
+```powershell
+Get-Service ssh-agent | Set-Service -StartupType Automatic
+Start-Service ssh-agent
+ssh-add $env:USERPROFILE\.ssh\id_ed25519
+```
+
+Upload the public key to the remote Unix-like account that runs `botctl`:
+
+```powershell
+type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh user@host "umask 077; mkdir -p ~/.ssh; cat >> ~/.ssh/authorized_keys"
+```
+
+Replace `user@host` with the remote account and host, for example
+`Borg@example.net`. The upload command may ask for the remote account password
+once; after the key is installed, the GUI expects key-based authentication.
+
+Verify that Windows OpenSSH can authenticate without a password prompt:
 
 ```powershell
 ssh -o BatchMode=yes user@host
 ```
 
-If that command asks for a password or fails, configure a key under
-`%USERPROFILE%\.ssh` or add the key to the Windows `ssh-agent` first.
+If that command fails, fix Windows OpenSSH authentication before using the GUI.
+When it succeeds, enter the same SSH user, host, port, and remote plugin path in
+the GUI settings, then use **Test SSH** before sending a Limnoria command.
 
 These beta binaries target recent Linux distributions and current Windows
 releases. Older platforms are not a support target for the GUI beta.
