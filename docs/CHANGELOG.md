@@ -4,6 +4,8 @@ All notable changes to LocalControl will be documented in this file.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-12
+
 ### Added
 
 - Added an optional TCP listener for local testing tools, disabled by default.

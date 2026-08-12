@@ -4,7 +4,7 @@ import os
 import socket
 import sys
 
-BOTCTL_VERSION = "1.1.0"
+BOTCTL_VERSION = "1.2.0"
 REPLY_CHUNK_BYTES = 4096
 MAX_REPLY_BYTES = 65536
 
