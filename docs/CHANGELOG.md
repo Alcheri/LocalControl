@@ -21,6 +21,11 @@ All notable changes to LocalControl will be documented in this file.
 - Cleaned lint health issues in plugin imports, the i18n fallback, and test
   re-export handling.
 
+### Fixed
+
+- Fixed Eggdrop SSH tunnel connections so a running local Pudding instance no
+  longer blocks tunnelled remote Eggdrop profiles that use the same Telnet port.
+
 ### Security
 
 - The optional TCP listener is loopback-only by default because TCP access is

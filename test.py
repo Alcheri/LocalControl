@@ -26,6 +26,13 @@ BOTCTL_LOADER = importlib.machinery.SourceFileLoader(
 botctl_module = types.ModuleType(BOTCTL_LOADER.name)
 BOTCTL_LOADER.exec_module(botctl_module)
 
+BOTCTL_GUI_PATH = Path(__file__).parent / "tools" / "botctl_gui.py"
+BOTCTL_GUI_LOADER = importlib.machinery.SourceFileLoader(
+    "botctl_gui_module", str(BOTCTL_GUI_PATH)
+)
+botctl_gui_module = types.ModuleType(BOTCTL_GUI_LOADER.name)
+BOTCTL_GUI_LOADER.exec_module(botctl_gui_module)
+
 
 class LocalControlTestCase(supybot_test.PluginTestCase):
     __test__ = False
@@ -210,6 +217,45 @@ class TestLocalControlModule(unittest.TestCase):
         }[name]
 
         self.assertIsNone(local_control._open_tcp_server())
+
+    def test_unused_loopback_port_skips_occupied_port(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as occupied:
+            occupied.bind(("127.0.0.1", 0))
+            occupied_port = occupied.getsockname()[1]
+
+            port = botctl_gui_module._unused_loopback_port()
+
+        self.assertNotEqual(port, occupied_port)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+            listener.bind(("127.0.0.1", port))
+
+    def test_ssh_tunnel_profile_can_use_local_port_without_visible_port(self):
+        profile = {
+            "local_host": "127.0.0.1",
+            "local_port": 45678,
+            "remote_host": "127.0.0.1",
+            "remote_port": 3333,
+            "ssh_user": "bot",
+            "ssh_host": "example.invalid",
+            "ssh_port": 22,
+        }
+        original_popen = botctl_gui_module.subprocess.Popen
+        calls = []
+
+        class Process:
+            def poll(self):
+                return None
+
+        try:
+            botctl_gui_module.subprocess.Popen = lambda *args, **kwargs: (
+                calls.append((args, kwargs)) or Process()
+            )
+            process = botctl_gui_module.start_eggdrop_ssh_tunnel(profile)
+        finally:
+            botctl_gui_module.subprocess.Popen = original_popen
+
+        self.assertIsInstance(process, Process)
+        self.assertIn("127.0.0.1:45678:127.0.0.1:3333", calls[0][0][0])
 
     def test_socket_request_logging_uses_safe_summary_by_default(self):
         lines = []

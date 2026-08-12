@@ -59,6 +59,8 @@ including direct Telnet connections and managed SSH tunnels.
 - Fixed password echo leakage in the transcript.
 - Fixed stale password redaction tokens persisting across reconnects.
 - Fixed duplicate `Disconnected` output when using the Disconnect button.
+- Fixed SSH tunnel mode so remote Eggdrop profiles use a dedicated loopback
+  tunnel port instead of colliding with a running local Pudding listener.
 
 ## Validation
 
@@ -67,7 +69,8 @@ including direct Telnet connections and managed SSH tunnels.
 - Windows native OpenSSH key authentication was configured and tested for
   private remote Eggdrop accounts.
 - Linux and Windows GUI validation passed for local Pudding and private remote
-  Eggdrop settings entered through the UI.
+  Eggdrop settings entered through the UI, including remote tunnel connections
+  while local Pudding is running.
 - Windows validation passed for:
   - application launch;
   - Eggdrop tab rendering;
@@ -75,7 +78,7 @@ including direct Telnet connections and managed SSH tunnels.
   - password redaction;
   - Up/Down input history;
   - single disconnect output.
-- LocalControl plugin tests passed: `12 passed`.
+- LocalControl plugin tests passed: `15 passed`.
 - GUI source formatting passed with Black.
 - Focused Bandit security check passed for `tools/botctl_gui.py`.
 

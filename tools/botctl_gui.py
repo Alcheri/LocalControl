@@ -1360,27 +1360,10 @@ class LocalControlGui:
                 "Eggdrop transport is invalid.\n", "eggdrop_error"
             )
             return
-        host = self.eggdrop_host_var.get().strip()
-        if not host:
-            self._append_eggdrop_output(
-                "Telnet host is required.\n", "eggdrop_error"
-            )
-            return
-        try:
-            port = int(self.eggdrop_port_var.get())
-        except ValueError:
-            self._append_eggdrop_output(
-                "Port must be a number.\n", "eggdrop_error"
-            )
-            return
-        if port < 1 or port > 65535:
-            self._append_eggdrop_output(
-                "Port must be between 1 and 65535.\n", "eggdrop_error"
-            )
-            return
         profile = dict(profile)
-        profile["port"] = port
         if profile.get("ssh_tunnel"):
+            host = "127.0.0.1"
+            port = _unused_loopback_port(host)
             ssh_user = self.eggdrop_ssh_user_var.get().strip()
             ssh_host = self.eggdrop_ssh_host_var.get().strip()
             remote_host = self.eggdrop_remote_host_var.get().strip()
@@ -1427,8 +1410,30 @@ class LocalControlGui:
                     "ssh_port": ssh_port,
                     "remote_host": remote_host,
                     "remote_port": remote_port,
+                    "local_host": host,
+                    "local_port": port,
                 }
             )
+        else:
+            host = self.eggdrop_host_var.get().strip()
+            if not host:
+                self._append_eggdrop_output(
+                    "Telnet host is required.\n", "eggdrop_error"
+                )
+                return
+            try:
+                port = int(self.eggdrop_port_var.get())
+            except ValueError:
+                self._append_eggdrop_output(
+                    "Port must be a number.\n", "eggdrop_error"
+                )
+                return
+            if port < 1 or port > 65535:
+                self._append_eggdrop_output(
+                    "Port must be between 1 and 65535.\n", "eggdrop_error"
+                )
+                return
+            profile["port"] = port
 
         self.eggdrop_pending_redactions.clear()
         self._set_eggdrop_connected(False, connecting=True)
@@ -2460,7 +2465,8 @@ def test_ssh_connection(
 def start_eggdrop_ssh_tunnel(
     profile: dict[str, object],
 ) -> subprocess.Popen:
-    local_port = int(profile["port"])
+    local_host = str(profile.get("local_host", "127.0.0.1"))
+    local_port = int(profile.get("local_port") or profile["port"])
     remote_host = str(profile.get("remote_host", "127.0.0.1"))
     remote_port = int(profile.get("remote_port", local_port))
     ssh_user = str(profile.get("ssh_user", ""))
@@ -2476,7 +2482,7 @@ def start_eggdrop_ssh_tunnel(
             _find_ssh_executable(),
             "-N",
             "-L",
-            f"{local_port}:{remote_host}:{remote_port}",
+            f"{local_host}:{local_port}:{remote_host}:{remote_port}",
             "-p",
             str(ssh_port),
             "-o",
@@ -2694,6 +2700,12 @@ def _port_or_default(port_text: str, default: int) -> int:
         return int(port_text)
     except ValueError:
         return default
+
+
+def _unused_loopback_port(host: str = "127.0.0.1") -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+        listener.bind((host, 0))
+        return int(listener.getsockname()[1])
 
 
 def _normalise_remote_path(remote_path: str) -> str:
