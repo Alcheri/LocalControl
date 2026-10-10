@@ -257,6 +257,96 @@ class TestLocalControlModule(unittest.TestCase):
         self.assertIsInstance(process, Process)
         self.assertIn("127.0.0.1:45678:127.0.0.1:3333", calls[0][0][0])
 
+    def test_eggdrop_endpoint_ports_are_recorded_per_user_and_host(self):
+        gui = botctl_gui_module
+        ports = gui._record_eggdrop_endpoint_ports(
+            {}, "pudding", "example.invalid", "2222", "3333"
+        )
+        ports = gui._record_eggdrop_endpoint_ports(
+            ports, "other", "example.invalid", "22", "4444"
+        )
+
+        self.assertEqual(
+            ports["pudding@example.invalid"],
+            {"ssh_port": 2222, "remote_port": 3333},
+        )
+        self.assertEqual(ports["other@example.invalid"]["remote_port"], 4444)
+
+    def test_eggdrop_endpoint_ports_ignore_invalid_values(self):
+        gui = botctl_gui_module
+        saved = {"a@b": {"ssh_port": 22, "remote_port": 3333}}
+
+        for user, host, ssh_port, remote_port in (
+            ("", "host", "22", "3333"),
+            ("user", "", "22", "3333"),
+            ("user", "host", "abc", "3333"),
+            ("user", "host", "22", "70000"),
+        ):
+            self.assertEqual(
+                gui._record_eggdrop_endpoint_ports(
+                    saved, user, host, ssh_port, remote_port
+                ),
+                saved,
+            )
+
+    def test_eggdrop_endpoint_ports_normalise_saved_settings(self):
+        gui = botctl_gui_module
+        saved = {
+            "good@host": {"ssh_port": 22, "remote_port": 3333},
+            "bad@host": {"ssh_port": "22", "remote_port": 3333},
+            "worse@host": {"ssh_port": True, "remote_port": 0},
+            "list@host": [],
+            5: {"ssh_port": 22, "remote_port": 3333},
+        }
+
+        self.assertEqual(
+            gui._normalise_eggdrop_endpoint_ports(saved),
+            {"good@host": {"ssh_port": 22, "remote_port": 3333}},
+        )
+        self.assertEqual(gui._normalise_eggdrop_endpoint_ports(None), {})
+
+    def test_selecting_eggdrop_ssh_user_fills_saved_ports(self):
+        gui = botctl_gui_module
+
+        class Var:
+            def __init__(self, value):
+                self.value = value
+
+            def get(self):
+                return self.value
+
+            def set(self, value):
+                self.value = value
+
+        fake = types.SimpleNamespace(
+            eggdrop_ssh_user_var=Var("pudding"),
+            eggdrop_ssh_host_var=Var("example.invalid"),
+            eggdrop_ssh_port_var=Var("22"),
+            eggdrop_remote_port_var=Var("3333"),
+            eggdrop_endpoint_ports={
+                "pudding@example.invalid": {
+                    "ssh_port": 2222,
+                    "remote_port": 4444,
+                }
+            },
+            _eggdrop_endpoint_applied="other@example.invalid",
+        )
+        apply = gui.LocalControlGui._apply_eggdrop_endpoint_ports
+
+        apply(fake, None)
+        self.assertEqual(fake.eggdrop_ssh_port_var.get(), "2222")
+        self.assertEqual(fake.eggdrop_remote_port_var.get(), "4444")
+
+        # A manual edit survives refocusing when user and host are unchanged.
+        fake.eggdrop_remote_port_var.set("5555")
+        apply(fake, None)
+        self.assertEqual(fake.eggdrop_remote_port_var.get(), "5555")
+
+        # An unknown user leaves the ports untouched.
+        fake.eggdrop_ssh_user_var.set("unknown")
+        apply(fake, None)
+        self.assertEqual(fake.eggdrop_remote_port_var.get(), "5555")
+
     def test_socket_request_logging_uses_safe_summary_by_default(self):
         lines = []
         original_info = plugin.log.info

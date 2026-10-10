@@ -398,6 +398,22 @@ If that command fails, fix Windows OpenSSH authentication before using the GUI.
 When it succeeds, enter the same SSH user, host, port, and remote plugin path in
 the GUI settings, then use **Test SSH** before sending a Limnoria command.
 
+If your accounts already accept a key held in WSL (for example `~/.ssh/id_rsa`),
+Windows OpenSSH cannot see it. Either copy that key pair to
+`%USERPROFILE%\.ssh` and restrict its permissions, or authorise a separate
+Windows key on each account. A Windows key that no account trusts fails with
+`Permission denied (publickey,password)`.
+
+#### Eggdrop SSH tunnel profiles
+
+On the **Eggdrop** tab, SSH tunnel mode remembers the SSH port and remote Telnet
+port for each SSH user and host pair. Selecting (or typing and leaving) a
+previously used user and host fills in both ports, so several Eggdrop accounts
+on one host do not need their ports remembered. Ports you edit by hand are not
+overwritten unless the user or host changes. Ports are stored in
+`botctl_gui.json` as `eggdrop_endpoint_ports` once a valid pair is saved;
+passwords are never stored.
+
 These beta binaries target recent Linux distributions and current Windows
 releases. Older platforms are not a support target for the GUI beta.
 

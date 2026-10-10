@@ -156,6 +156,9 @@ class LocalControlGui:
             self.settings.get("eggdrop_ssh_host_history", []),
             DEFAULT_EGGDROP_SSH_HOST,
         )
+        self.eggdrop_endpoint_ports = _normalise_eggdrop_endpoint_ports(
+            self.settings.get("eggdrop_endpoint_ports", {})
+        )
         self.eggdrop_remote_port_history = _normalise_value_history(
             self.settings.get("eggdrop_remote_port_history", []),
             str(DEFAULT_EGGDROP_REMOTE_PORT),
@@ -238,6 +241,9 @@ class LocalControlGui:
                     "eggdrop_remote_port", DEFAULT_EGGDROP_REMOTE_PORT
                 )
             )
+        )
+        self._eggdrop_endpoint_applied = _eggdrop_endpoint_key(
+            self.eggdrop_ssh_user_var.get(), self.eggdrop_ssh_host_var.get()
         )
         self.eggdrop_password_var = tk.StringVar(value="")
         self.eggdrop_input_var = tk.StringVar(value="")
@@ -712,6 +718,12 @@ class LocalControlGui:
         self.eggdrop_ssh_user_entry.grid(
             row=0, column=1, padx=(8, 12), sticky="ew"
         )
+        self.eggdrop_ssh_user_entry.bind(
+            "<<ComboboxSelected>>", self._apply_eggdrop_endpoint_ports
+        )
+        self.eggdrop_ssh_user_entry.bind(
+            "<FocusOut>", self._apply_eggdrop_endpoint_ports
+        )
         ttk.Label(tunnel_row, text="SSH host").grid(
             row=0, column=2, sticky="w"
         )
@@ -722,6 +734,12 @@ class LocalControlGui:
         )
         self.eggdrop_ssh_host_entry.grid(
             row=0, column=3, padx=(8, 12), sticky="ew"
+        )
+        self.eggdrop_ssh_host_entry.bind(
+            "<<ComboboxSelected>>", self._apply_eggdrop_endpoint_ports
+        )
+        self.eggdrop_ssh_host_entry.bind(
+            "<FocusOut>", self._apply_eggdrop_endpoint_ports
         )
         ttk.Label(tunnel_row, text="SSH port").grid(
             row=0, column=4, sticky="w"
@@ -1889,6 +1907,21 @@ class LocalControlGui:
         del self.command_history[20:]
         self.command_entry.configure(values=self.command_history)
 
+    def _apply_eggdrop_endpoint_ports(self, _event: tk.Event) -> None:
+        key = _eggdrop_endpoint_key(
+            self.eggdrop_ssh_user_var.get(), self.eggdrop_ssh_host_var.get()
+        )
+        # Only refill when the user/host pair changed, so a manually edited
+        # port is not overwritten by merely tabbing through the fields.
+        if key == self._eggdrop_endpoint_applied:
+            return
+        self._eggdrop_endpoint_applied = key
+        ports = self.eggdrop_endpoint_ports.get(key)
+        if not ports:
+            return
+        self.eggdrop_ssh_port_var.set(str(ports["ssh_port"]))
+        self.eggdrop_remote_port_var.set(str(ports["remote_port"]))
+
     def _record_server_settings(self) -> None:
         self.ssh_user_history = _record_value_history(
             self.ssh_user_var.get(), self.ssh_user_history
@@ -1907,6 +1940,13 @@ class LocalControlGui:
         self.eggdrop_remote_port_history = _record_value_history(
             self.eggdrop_remote_port_var.get(),
             self.eggdrop_remote_port_history,
+        )
+        self.eggdrop_endpoint_ports = _record_eggdrop_endpoint_ports(
+            self.eggdrop_endpoint_ports,
+            self.eggdrop_ssh_user_var.get(),
+            self.eggdrop_ssh_host_var.get(),
+            self.eggdrop_ssh_port_var.get(),
+            self.eggdrop_remote_port_var.get(),
         )
         self.eggdrop_ssh_user_entry.configure(
             values=self.eggdrop_ssh_user_history
@@ -1964,6 +2004,7 @@ class LocalControlGui:
             "eggdrop_ssh_user_history": self.eggdrop_ssh_user_history,
             "eggdrop_ssh_host_history": self.eggdrop_ssh_host_history,
             "eggdrop_remote_port_history": self.eggdrop_remote_port_history,
+            "eggdrop_endpoint_ports": self.eggdrop_endpoint_ports,
             "window_geometry": self.root.geometry(),
         }
 
@@ -3015,6 +3056,55 @@ def _normalise_value_history(
     if current_value and current_value not in history:
         history.insert(0, current_value)
     return history[:20]
+
+
+def _eggdrop_endpoint_key(user: str, host: str) -> str:
+    user = user.strip()
+    host = host.strip()
+    if not user or not host:
+        return ""
+    return f"{user}@{host}"
+
+
+def _normalise_eggdrop_endpoint_ports(
+    saved: object,
+) -> dict[str, dict[str, int]]:
+    result: dict[str, dict[str, int]] = {}
+    if not isinstance(saved, dict):
+        return result
+    for key, ports in saved.items():
+        if not isinstance(key, str) or not isinstance(ports, dict):
+            continue
+        ssh_port = ports.get("ssh_port")
+        remote_port = ports.get("remote_port")
+        if all(
+            isinstance(port, int)
+            and not isinstance(port, bool)
+            and 1 <= port <= 65535
+            for port in (ssh_port, remote_port)
+        ):
+            result[key] = {"ssh_port": ssh_port, "remote_port": remote_port}
+    return result
+
+
+def _record_eggdrop_endpoint_ports(
+    endpoint_ports: dict[str, dict[str, int]],
+    user: str,
+    host: str,
+    ssh_port_text: str,
+    remote_port_text: str,
+) -> dict[str, dict[str, int]]:
+    key = _eggdrop_endpoint_key(user, host)
+    try:
+        ssh_port = int(ssh_port_text)
+        remote_port = int(remote_port_text)
+    except ValueError:
+        return endpoint_ports
+    if not key or not all(1 <= p <= 65535 for p in (ssh_port, remote_port)):
+        return endpoint_ports
+    updated = dict(endpoint_ports)
+    updated[key] = {"ssh_port": ssh_port, "remote_port": remote_port}
+    return updated
 
 
 def _record_value_history(value: str, history: list[str]) -> list[str]:

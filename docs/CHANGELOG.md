@@ -4,6 +4,12 @@ All notable changes to LocalControl will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- The Eggdrop SSH tunnel settings now remember the SSH and remote Telnet ports
+  for each SSH user and host pair, and fill them in when that user is selected.
+- Documented reusing a WSL-held SSH key with the Windows GUI.
+
 ## [1.2.0] - 2026-08-12
 
 ### Added
